@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng ký tài khoản</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<div class="register-form">
+    <table>
+        <tr>
+            <td><label for="name">Họ và tên</label></td>
+            <td><input type="text" name="name" id="name" required></td>
+        </tr>
+        <tr>
+            <td><label for="birthdate">Ngày sinh</label></td>
+            <td><input type="date" name="birthdate" id="birthdate" value="2003-01-13" required pattern=""></td>
+        </tr>
+        <tr>
+            <td>Giới tính</td>
+            <td>
+                <input type="radio" name="gender" id="male" checked><label for="male">Nam</label>
+                <input type="radio" name="gender" id="female"><label for="female">Nữ</label>
+            </td>
+        </tr>
+        <tr>
+            <td><label for="email">Email</label></td>
+            <td><input type="email" name="email" id="email" required></td>
+        </tr>
+        <tr>
+            <td><label for="password">Mật khẩu</label></td>
+            <td><input type="password" name="password" id="password" required></td>
+        </tr>
+        <tr>
+            <td><label for="confirm_password">Nhập lại mật khẩu</label></td>
+            <td><input type="password" name="confirm_password" id="confirm_password"></td>
+        </tr>
+    </table>
+    <button onclick="submit()">Đăng Ký</button>
+</div>
+
+<script src="js/register.js"></script>
+<script>
+
+</script>
+</body>
+</html>

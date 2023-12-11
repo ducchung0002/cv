@@ -1,0 +1,209 @@
+127.0.0.1:5000
+
+    / => /job
+        Hiển thị các banner tìm việc
+        Tìm kiếm công ty theo tên, vị trí ứng tuyển, lương, địa điểm làm việc
+            Flask trả về:
+                recruiment: list chứa chi tiết các tuyển dụng của các doanh nghiệp
+                    company-id
+                    company-name
+                    company-
+    /job/<job-id>
+        Chi tiết công việc
+    /job/<enterprise_id>
+        Chi tiết doanh nghiệp
+        Các job đang tuyển
+    /job/login
+        => Hỏi user là ứng viên hay doanh nghiệp
+            ứng viên => /applicant/login
+            doanh nghiệp => /enterprise/login
+Giao diện ứng viên:
+    /applicant/register:
+        Đăng ký 
+    /applicant => /applicant/login: Yêu cầu đăng nhập
+    /applicant/profile/<user-id>: Sau khi đăng nhập
+        Xem/Chỉnh sửa thông tin cá nhân
+            Ảnh đại diện
+            Họ tên
+            Ngày sinh
+            Giới tính
+            SĐT
+            Địa chỉ hiện tại
+            Email
+            Liên kết: Facebook, Github
+            Giới thiệu bản thân
+        Học vấn
+            Trường học
+            Chuyên ngành
+            Thời gian Bắt đầu học 
+            Thời gian Kết thúc học(nếu đang học thì null)
+        Kinh nghiệm thực tập
+            Tên công ty
+            Chức vụ
+            Thời gian: bắt đầu => kết thúc (nếu đang làm thì null)
+            Mô tả chi tiết
+        Kỹ năng IT:
+            Tên kỹ năng(Ngôn ngữ lập trình/Framework/Database/OS) + Thời gian sử dụng
+        Chứng chỉ:
+            Tên chứng chỉ: Ngoại ngữ/khoá học
+            Ngày nhận
+            Tải ảnh/Liên kết
+        Dự án, Sản phẩm:
+            Tên 
+            Mô tả chi tiết
+            Video/Liên kết
+    /applicant/application
+        Các công ty đang ứng tuyển
+    /applicant/logout:
+        Đăng xuất => /
+
+    /index
+        Hiển thị như chưa đăng nhập.
+
+**********************************************************************************************************
+Giao diện doanh nghiệp:
+    /enterprise/login: Yêu cầu đăng nhập
+    /enterprise/index
+        Nếu công ty đang công bố yêu cầu tuyển dụng
+            Hồ sơ của ứng viên nộp đơn vào công ty
+        Else
+            Hiển thị button công bố yêu cầu tuyển dụng
+
+    /enterprise/profile
+        Xem/chỉnh sửa thông tin công ty
+            Tên công ty
+            Giới thiệu công ty
+    /enterprise/recruitment
+        công bố yêu cầu tuyển dụng
+            Mô tả công việc
+            Yêu cầu ứng viên
+            Quyền lợi
+            Địa điểm làm việc
+            Thời gian làm việc
+            Hạn nộp hồ sơ: 04/01/2024
+    /enterprise/admin
+        quản lý các admin của công ty
+        admin có thể đăng nhập và xem chi tiết về công ty
+
+database cv:
+    Các bảng province,ward,district
+        
+        skill-type:
+            id:
+            name:
+
+        skill:
+            id
+            name
+            skill-type-id
+
+        experience:
+            id
+            name
+    ===================================
+    applicant: Ứng cử viên
+        id:
+        avatar:
+        name:
+        birthdate:
+        gender: 0/1
+        phone
+        address: địa chỉ hiện tại (textbox)
+        email: email đăng nhập
+        password_hashed
+        facebook: link
+        github: link
+        self-introduction (text)
+        // Học vấn
+        education-school-name
+        education-major
+        education-school-start-date
+        education-school-end-date
+        // Thực tập
+        internship-enterprise-name
+        internship-position
+        internship-begin-date
+        internship-end-date
+            
+            applicant_skill:
+                applicant_id
+                skill_id
+                experience_id
+                
+
+            applicant_certificate:
+                id
+                name
+                received_date
+                applicant_id
+
+                    applicant_certificate_image:
+                        certificate_id
+                        image
+
+            applicant_project:
+                id
+                name
+                description
+                video_link
+                project_link
+                applicant_id
+
+                    applicant_project_image
+                        project_id
+                        image
+
+    ===================================    
+    enterprise: Doanh nghiệp
+        id: id
+        avatar: ảnh đại diện
+        name: tên công ty
+        introduction: Giới thiệu công ty
+        homepage: trang web của công ty
+            // Các chi nhánh
+            enterprise_address:
+                province
+                ward
+                district
+                street
+                enterprise-id
+    ===================================
+    enterprise_admin: Admin doanh nghiệp
+        name: tên
+        email(PK): email đăng nhập
+        password_hashed:
+        role: phân quyền cho admin
+            0x001 : đánh giá ứng viên
+            0x011 : toàn quyền
+        enterprise_id: id doanh nghiệp
+    ===================================
+    recruiment: Yêu cầu tuyển dụng
+        id: auto increment
+        banner: ảnh banner để trình chiếu trên /index
+        job_name: vd: Nhân Viên Kinh Doanh Máy Móc
+        job_description: Mô tả công việc
+        position: nhân viên/giám đốc
+        applicant_requirement: Yêu cầu ứng viên
+        benefit: quyền lợi
+        min_salary: 12tr
+        max_salary: 30tr
+        enterprise_id: id doanh nghiệp
+        deadline: Hạn nộp hồ sơ
+    
+        // yêu cầu kỹ năng skill, cho việc tìm kiếm
+        recruiment_skill:
+            recruiment_id
+            skill_id
+            experience_id
+
+    ===================================
+    
+    application_record: Đơn ứng tuyển
+        applicant_id: id người ứng tuyển
+        recruiment_id: id tuyển dụng
+        submit_date: ngày ứng tuyển
+        application_status_id: trạng thái
+
+    application_status:
+        id: 0,1,2
+        name: đang chờ đánh giá,không đạt,đạt

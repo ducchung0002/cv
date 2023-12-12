@@ -4,6 +4,7 @@ from flask import jsonify
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 
+
 from service.applicant.applicant_service import applicant_service
 
 

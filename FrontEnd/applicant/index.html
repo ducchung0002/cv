@@ -2,12 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Hello</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
 </head>
 <body>
     <h1 id="test1"></h1>
     <h1 id="test2"></h1>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="js/index.js"></script>
+
+    <div id="register"></div>
+    <div id="login"></div>
+    <script>
+        $("#register").load("register.html");
+        $("#login").load("login.html");
+    </script>
 </body>
 </html>

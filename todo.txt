@@ -88,14 +88,14 @@ Giao diện doanh nghiệp:
 database cv:
     Các bảng province,ward,district
         
-        skill-type:
+        profile_skill-type:
             id:
             name:
 
-        skill:
+        profile_skill:
             id
             name
-            skill-type-id
+            profile_skill-type-id
 
         experience:
             id
@@ -190,7 +190,7 @@ database cv:
         enterprise_id: id doanh nghiệp
         deadline: Hạn nộp hồ sơ
     
-        // yêu cầu kỹ năng skill, cho việc tìm kiếm
+        // yêu cầu kỹ năng profile_skill, cho việc tìm kiếm
         recruiment_skill:
             recruiment_id
             skill_id

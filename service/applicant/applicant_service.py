@@ -11,8 +11,7 @@ class applicant_service:
         try:
             connection = pyodbc.connect(CONNECTION_STRING)
             cursor = connection.cursor()
-            cursor.execute("INSERT INTO applicant(name, birthdate, gender, email, password_hashed) VALUES (?,?,?,?,?)",
-                           (name, birthdate, gender, email, hashed_pass))
+            cursor.execute("INSERT INTO applicant(name, birthdate, gender, email, password_hashed) VALUES (?,?,?,?,?)", (name, birthdate, gender, email, hashed_pass))
             cursor.commit()
             cursor.close()
             connection.close()
@@ -32,25 +31,13 @@ class applicant_service:
         try:
             connection = pyodbc.connect(CONNECTION_STRING)
             cursor = connection.cursor()
-            cursor.execute(
-                "SELECT id,avatar,name,birthdate,gender,phone,address,email,password_hashed,facebook,github,self_introduction,education_school_name,education_major,education_school_start_date,education_school_end_date,internship_enterprise_name,internship_position,internship_start_date,internship_end_date  FROM applicant WHERE id = ?",
-                (id,))
+            cursor.execute("SELECT id,avatar,name,birthdate,gender,phone,address,email,password_hashed,facebook,github,self_introduction,education_school_name,education_major,education_school_start_date,education_school_end_date,internship_enterprise_name,internship_position,internship_start_date,internship_end_date  FROM applicant WHERE id = ?", (id,))
             record = cursor.fetchone()
             cursor.close()
             connection.close()
-
             if record:
-                return applicant(
-                    app_json={"id": record[0], "avatar": record[1], "name": record[2], "birthdate": record[3],
-                              "gender": record[4], "phone": record[5], "address": record[6], "email": record[7],
-                              "password_hashed": record[8], "facebook": record[9], "github": record[10],
-                              "self_introduction": record[11], "education_school_name": record[12],
-                              "education_major": record[13], "education_school_start_date": record[14],
-                              "education_school_end_date": record[15], "internship_enterprise_name": record[16],
-                              "internship_position": record[17], "internship_start_date": record[18],
-                              "internship_end_date": record[19]})
+                return applicant(app_json={"id": record[0], "avatar": record[1], "name": record[2], "birthdate": record[3], "gender": record[4], "phone": record[5], "address": record[6], "email": record[7], "password_hashed": record[8], "facebook": record[9], "github": record[10], "self_introduction": record[11], "education_school_name": record[12], "education_major": record[13], "education_school_start_date": record[14], "education_school_end_date": record[15], "internship_enterprise_name": record[16], "internship_position": record[17], "internship_start_date": record[18], "internship_end_date": record[19]})
             return None
-
         except:
             raise
 
@@ -58,24 +45,13 @@ class applicant_service:
         try:
             connection = pyodbc.connect(CONNECTION_STRING)
             cursor = connection.cursor()
-            cursor.execute(
-                "SELECT id,avatar,name,birthdate,gender,phone,address,email,password_hashed,facebook,github,self_introduction,education_school_name,education_major,education_school_start_date,education_school_end_date,internship_enterprise_name,internship_position,internship_start_date,internship_end_date  FROM applicant WHERE email = ?",
-                (email,))
+            cursor.execute("SELECT id,avatar,name,birthdate,gender,phone,address,email,password_hashed,facebook,github,self_introduction,education_school_name,education_major,education_school_start_date,education_school_end_date,internship_enterprise_name,internship_position,internship_start_date,internship_end_date  FROM applicant WHERE email = ?", (email,))
             record = cursor.fetchone()
             cursor.close()
             connection.close()
             if record:
-                return applicant(
-                    app_json={"id": record[0], "avatar": record[1], "name": record[2], "birthdate": record[3],
-                              "gender": record[4], "phone": record[5], "address": record[6], "email": record[7],
-                              "password_hashed": record[8], "facebook": record[9], "github": record[10],
-                              "self_introduction": record[11], "education_school_name": record[12],
-                              "education_major": record[13], "education_school_start_date": record[14],
-                              "education_school_end_date": record[15], "internship_enterprise_name": record[16],
-                              "internship_position": record[17], "internship_start_date": record[18],
-                              "internship_end_date": record[19]})
+                return applicant(app_json={"id": record[0], "avatar": record[1], "name": record[2], "birthdate": record[3], "gender": record[4], "phone": record[5], "address": record[6], "email": record[7], "password_hashed": record[8], "facebook": record[9], "github": record[10], "self_introduction": record[11], "education_school_name": record[12], "education_major": record[13], "education_school_start_date": record[14], "education_school_end_date": record[15], "internship_enterprise_name": record[16], "internship_position": record[17], "internship_start_date": record[18], "internship_end_date": record[19]})
             return None
-
         except:
             raise
 
@@ -129,7 +105,7 @@ class applicant_service:
             connection.close()
         except:
             raise
-
+    # applicant skill
     def get_applicant_skill(self, id):
         try:
             connection = pyodbc.connect(CONNECTION_STRING)
@@ -175,5 +151,48 @@ class applicant_service:
             cursor.commit()
             cursor.close()
             connection.close()
+        except:
+            raise
+
+    def insert_applicant_skill(self, id, skill_id, experience_id):
+        try:
+            connection = pyodbc.connect(CONNECTION_STRING)
+            cursor = connection.cursor()
+            cursor.execute("INSERT INTO applicant_skill(applicant_id, skill_id, experience_id) VALUES(?, ?, ?)", (id, skill_id, experience_id))
+            cursor.commit()
+
+            cursor.execute("SELECT MAX(id) FROM applicant_skill")
+            record_id = cursor.fetchone()[0]
+
+            cursor.close()
+            connection.close()
+
+            return record_id
+        except:
+            raise
+    # applicant certificate
+    def get_applicant_certificate(self, id):
+        try:
+            connection = pyodbc.connect(CONNECTION_STRING)
+            cursor = connection.cursor()
+            cursor.execute("SELECT id, name, received_date FROM applicant_certificate WHERE applicant_id=?", (id,))
+            records = cursor.fetchall()
+            all_certificate = []
+            for record in records:
+                cer = {
+                    "id": record[0], "name": record[1],
+                    "received_date": record[2], "images": []
+                }
+
+                cursor.execute("SELECT id, image FROM applicant_certificate_image WHERE certificate_id=?", (record[0],))
+                images = cursor.fetchall()
+                for img in images:
+                    cer["images"].append({"id": img[0], "image": img[1]})
+
+                all_certificate.append(cer)
+            cursor.close()
+            connection.close()
+
+            return all_certificate
         except:
             raise

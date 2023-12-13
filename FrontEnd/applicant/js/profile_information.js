@@ -17,6 +17,12 @@ let internship_position = document.getElementById("internship_position");
 let internship_start_date = document.getElementById("internship_start_date");
 let internship_end_date = document.getElementById("internship_end_date");
 
+/*
+ * Globals
+ */
+
+let applicant;
+
 function fill_profile_information() {
     avatar.src = "data:image/jpeg;base64," + applicant["avatar"];
     if (applicant["avatar"] === null || applicant["avatar"] === "") {
@@ -69,22 +75,16 @@ function update_profile_information() {
         }
     })
         .then((response) => {
-            console.log(response.data)
             alert("Cập nhật hồ sơ thành công!");
         })
         .catch((error) => {
-            console.error(`Error: ${error}`);
+            console.error(`Update profile information error: ${error}`);
             alert("Cập nhật hồ sơ thất bại!");
         });
 }
 
 function update_avatar() {
     let file = document.getElementById("fileInput").files[0];
-    let reader = new FileReader();
-    reader.onload = function (e) {
-        document.getElementById("avatar").src = e.target.result;
-    };
-    reader.readAsDataURL(file);
     // upload to backend
     let formData = new FormData();
     formData.append("avatar", file);
@@ -93,13 +93,15 @@ function update_avatar() {
             "Authorization": `Bearer ${access_token}`,
             "Content-Type": "multipart/form-data"
         }
-    })
-        .then(function (response) {
-            console.log(response.data);
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
+    }).then(function (response) {
+        let reader = new FileReader();
+        reader.onload = function (e) {
+            document.getElementById("avatar").src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }).catch(function (error) {
+        console.log(`Update avatar error: ${error}`);
+    });
 }
 
 avatar.onclick = () => {
@@ -115,5 +117,6 @@ axios.get("http://127.0.0.1:5000/applicant/profile", {
     applicant = response.data["applicant"];
     fill_profile_information();
 }).catch((error) => {
-    console.log(`Error: ${error}`);
+    alert(`Get applicant profile error: ${error}`);
+    window.location.href = "login.html";
 });

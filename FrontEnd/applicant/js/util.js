@@ -6,5 +6,5 @@ function convert_python_date_format(py_date) {
         let day = ("0" + date.getUTCDate()).slice(-2);
         return `${year}-${month}-${day}`;
     }
-    return null;
+    return "";
 }

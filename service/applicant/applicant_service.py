@@ -1,6 +1,7 @@
 import pyodbc
-from werkzeug.security import generate_password_hash, check_password_hash
+import os
 
+from werkzeug.security import generate_password_hash, check_password_hash
 from entity.applicant import applicant
 from service import CONNECTION_STRING
 
@@ -11,8 +12,7 @@ class applicant_service:
         try:
             connection = pyodbc.connect(CONNECTION_STRING)
             cursor = connection.cursor()
-            cursor.execute("INSERT INTO applicant(name, birthdate, gender, email, password_hashed) VALUES (?,?,?,?,?)",
-                           (name, birthdate, gender, email, hashed_pass))
+            cursor.execute("INSERT INTO applicant(name, birthdate, gender, email, password_hashed) VALUES (?,?,?,?,?)", (name, birthdate, gender, email, hashed_pass))
             cursor.commit()
             cursor.close()
             connection.close()
@@ -32,25 +32,14 @@ class applicant_service:
         try:
             connection = pyodbc.connect(CONNECTION_STRING)
             cursor = connection.cursor()
-            cursor.execute(
-                "SELECT id,avatar,name,birthdate,gender,phone,address,email,password_hashed,facebook,github,self_introduction,education_school_name,education_major,education_school_start_date,education_school_end_date,internship_enterprise_name,internship_position,internship_start_date,internship_end_date  FROM applicant WHERE id = ?",
-                (id,))
+            cursor.execute("SELECT id,avatar_path,name,birthdate,gender,phone,address,email,password_hashed,facebook,github,self_introduction,education_school_name,education_major,education_school_start_date,education_school_end_date,internship_enterprise_name,internship_position,internship_start_date,internship_end_date  FROM applicant WHERE id = ?", (id,))
             record = cursor.fetchone()
             cursor.close()
             connection.close()
 
             if record:
-                return applicant(
-                    app_json={"id": record[0], "avatar": record[1], "name": record[2], "birthdate": record[3],
-                              "gender": record[4], "phone": record[5], "address": record[6], "email": record[7],
-                              "password_hashed": record[8], "facebook": record[9], "github": record[10],
-                              "self_introduction": record[11], "education_school_name": record[12],
-                              "education_major": record[13], "education_school_start_date": record[14],
-                              "education_school_end_date": record[15], "internship_enterprise_name": record[16],
-                              "internship_position": record[17], "internship_start_date": record[18],
-                              "internship_end_date": record[19]})
+                return applicant(app_json={"id": record[0], "avatar_path": record[1], "name": record[2], "birthdate": record[3], "gender": record[4], "phone": record[5], "address": record[6], "email": record[7], "password_hashed": record[8], "facebook": record[9], "github": record[10], "self_introduction": record[11], "education_school_name": record[12], "education_major": record[13], "education_school_start_date": record[14], "education_school_end_date": record[15], "internship_enterprise_name": record[16], "internship_position": record[17], "internship_start_date": record[18], "internship_end_date": record[19]})
             return None
-
         except:
             raise
 
@@ -58,24 +47,13 @@ class applicant_service:
         try:
             connection = pyodbc.connect(CONNECTION_STRING)
             cursor = connection.cursor()
-            cursor.execute(
-                "SELECT id,avatar,name,birthdate,gender,phone,address,email,password_hashed,facebook,github,self_introduction,education_school_name,education_major,education_school_start_date,education_school_end_date,internship_enterprise_name,internship_position,internship_start_date,internship_end_date  FROM applicant WHERE email = ?",
-                (email,))
+            cursor.execute("SELECT id,avatar_path,name,birthdate,gender,phone,address,email,password_hashed,facebook,github,self_introduction,education_school_name,education_major,education_school_start_date,education_school_end_date,internship_enterprise_name,internship_position,internship_start_date,internship_end_date  FROM applicant WHERE email = ?", (email,))
             record = cursor.fetchone()
             cursor.close()
             connection.close()
             if record:
-                return applicant(
-                    app_json={"id": record[0], "avatar": record[1], "name": record[2], "birthdate": record[3],
-                              "gender": record[4], "phone": record[5], "address": record[6], "email": record[7],
-                              "password_hashed": record[8], "facebook": record[9], "github": record[10],
-                              "self_introduction": record[11], "education_school_name": record[12],
-                              "education_major": record[13], "education_school_start_date": record[14],
-                              "education_school_end_date": record[15], "internship_enterprise_name": record[16],
-                              "internship_position": record[17], "internship_start_date": record[18],
-                              "internship_end_date": record[19]})
+                return applicant(app_json={"id": record[0], "avatar_path": record[1], "name": record[2], "birthdate": record[3], "gender": record[4], "phone": record[5], "address": record[6], "email": record[7], "password_hashed": record[8], "facebook": record[9], "github": record[10], "self_introduction": record[11], "education_school_name": record[12], "education_major": record[13], "education_school_start_date": record[14], "education_school_end_date": record[15], "internship_enterprise_name": record[16], "internship_position": record[17], "internship_start_date": record[18], "internship_end_date": record[19]})
             return None
-
         except:
             raise
 
@@ -119,17 +97,17 @@ class applicant_service:
         except:
             raise
 
-    def update_avatar(self, id, avatar):
+    def update_avatar_path(self, id, avatar_path):
         try:
             connection = pyodbc.connect(CONNECTION_STRING)
             cursor = connection.cursor()
-            cursor.execute("UPDATE applicant SET avatar=? WHERE id=?", (avatar, id))
+            cursor.execute("UPDATE applicant SET avatar_path=? WHERE id=?", (avatar_path, id))
             cursor.commit()
             cursor.close()
             connection.close()
         except:
             raise
-
+    # applicant skill
     def get_applicant_skill(self, id):
         try:
             connection = pyodbc.connect(CONNECTION_STRING)
@@ -177,3 +155,121 @@ class applicant_service:
             connection.close()
         except:
             raise
+
+    def insert_applicant_skill(self, id, skill_id, experience_id):
+        try:
+            connection = pyodbc.connect(CONNECTION_STRING)
+            cursor = connection.cursor()
+            cursor.execute("INSERT INTO applicant_skill(applicant_id, skill_id, experience_id) VALUES(?, ?, ?)", (id, skill_id, experience_id))
+            cursor.commit()
+
+            cursor.execute("SELECT MAX(id) FROM applicant_skill")
+            record_id = cursor.fetchone()[0]
+
+            cursor.close()
+            connection.close()
+
+            return record_id
+        except:
+            raise
+    # applicant certificate
+    def get_applicant_certificate(self, applicant_id):
+        try:
+            connection = pyodbc.connect(CONNECTION_STRING)
+            cursor = connection.cursor()
+            cursor.execute("SELECT id, name, received_date FROM applicant_certificate WHERE applicant_id=?", (applicant_id,))
+            records = cursor.fetchall()
+            all_certificate = []
+            for record in records:
+                cer = {
+                    "id": record[0], "name": record[1],
+                    "received_date": record[2], "images": []
+                }
+
+                cursor.execute("SELECT id, image_path FROM applicant_certificate_image WHERE certificate_id=?", (record[0],))
+                images = cursor.fetchall()
+                for img in images:
+                    cer["images"].append({"id": img[0], "image_path": img[1]})
+
+                all_certificate.append(cer)
+            cursor.close()
+            connection.close()
+
+            return all_certificate
+        except:
+            raise
+
+    def insert_applicant_certificate(self, applicant_id):
+        try:
+            connection = pyodbc.connect(CONNECTION_STRING)
+            cursor = connection.cursor()
+            cursor.execute("INSERT INTO applicant_certificate (applicant_id) VALUES (?)", (applicant_id, ))
+            cursor.commit()
+            cursor.execute("SELECT MAX(id) FROM applicant_certificate")
+            id = cursor.fetchone()[0]
+            cursor.close()
+            connection.close()
+
+            return id
+        except:
+            raise
+
+    def update_applicant_certificate(self, id, name, received_date):
+        try:
+            received_date = None if not received_date else received_date
+            connection = pyodbc.connect(CONNECTION_STRING)
+            cursor = connection.cursor()
+            cursor.execute("UPDATE applicant_certificate SET name=?, received_date=? WHERE id=?", (name, received_date, id))
+            cursor.commit()
+            cursor.close()
+            connection.close()
+        except:
+            raise
+
+    def delete_applicant_certificate(self, id):
+        try:
+            connection = pyodbc.connect(CONNECTION_STRING)
+            cursor = connection.cursor()
+            cursor.execute("SELECT image_path FROM applicant_certificate_image WHERE certificate_id=?", (id, ))
+            image_path = cursor.fetchall()
+            for img_p in image_path:
+                if os.path.isfile(img_p[0]):
+                    os.remove(img_p[0])
+
+            cursor.execute("DELETE FROM applicant_certificate_image WHERE certificate_id=?", (id, ))
+            cursor.execute("DELETE FROM applicant_certificate WHERE id=?", (id, ))
+            cursor.commit()
+            cursor.close()
+            connection.close()
+        except:
+            raise
+
+    # applicant certificate image
+    def insert_applicant_certificate_image(self, certificate_id, certificate_image_dir_path, extension):
+        try:
+            connection = pyodbc.connect(CONNECTION_STRING)
+            cursor = connection.cursor()
+            cursor.execute("INSERT INTO applicant_certificate_image(certificate_id) VALUES (?)", (certificate_id, ))
+            cursor.commit()
+            cursor.execute("SELECT MAX(id) FROM applicant_certificate_image")
+            id = cursor.fetchone()[0]
+            image_path = os.path.join(certificate_image_dir_path, str(id) + extension)
+            cursor.execute("UPDATE applicant_certificate_image SET image_path=? WHERE certificate_id=?", (image_path, certificate_id))
+            cursor.close()
+            connection.close()
+
+            return id, image_path
+        except:
+            raise
+
+    def delete_applicant_certificate_image(self, applicant_certificate_image_id):
+        try:
+            connection = pyodbc.connect(CONNECTION_STRING)
+            cursor = connection.cursor()
+            cursor.execute("DELETE FROM applicant_certificate_image WHERE id=?", (applicant_certificate_image_id, ))
+            cursor.commit()
+            cursor.close()
+            connection.close()
+        except:
+            raise
+

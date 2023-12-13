@@ -4,7 +4,7 @@ class applicant:
     def __init__(self, app_json: dict):
         # print("json:", app_json)
         self.id = app_json.get("id", None)
-        self.avatar = app_json.get("avatar", None)
+        self.avatar_path = app_json.get("avatar_path", None)
         self.name = app_json.get("name", None)
         self.birthdate = app_json.get("birthdate", None)
         self.gender = app_json.get("gender", None)
@@ -27,7 +27,7 @@ class applicant:
     def jsonify(self):
         return {
             "id": self.id,
-            "avatar": base64.b64encode(self.avatar).decode("utf-8") if self.avatar else self.avatar,
+            "avatar_path": self.avatar_path,
             "name": self.name,
             "birthdate": self.birthdate,
             "gender": self.gender,

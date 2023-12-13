@@ -14,28 +14,36 @@
     <!-- jQuery -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="js/util.js"></script>
+    <script>
+        let access_token = localStorage.getItem("access_token");
+    </script>
 </head>
 
 
 <body>
 
-<div class="p-lg-5 container">
+<div class="container">
     <div class="profile row container" id="applicant_information">
         <!-- information.html -->
     </div>
-    <div class="skill row container m-5" id="skill_container">
-        <p class="display-1">Kỹ năng chuyên môn</p>
+    <div class="skill row container mt-5">
         <div id="applicant_skill">
             <!-- profile_skill.html -->
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div id="applicant_certificate">
+            <!-- profile_certificate.html -->
         </div>
     </div>
 </div>
 
 
-<script src="js/profile.js"></script>
+
 <script>
     $("#applicant_information").load("profile_information.html");
     $("#applicant_skill").load("profile_skill.html");
+    $("#applicant_certificate").load("profile_certificate.html");
 </script>
 
 

@@ -1,9 +1,21 @@
+import traceback
+
 import pyodbc
 import os
+import json
+import smtplib
+import threading
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from entity.applicant import applicant
 from service import CONNECTION_STRING
+from email.mime.text import MIMEText
+from random import randint, choice
+from string import ascii_letters, digits, punctuation
+from datetime import datetime, timedelta
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))  # service/applicant/
+RESET_PASSWORD_DIR = os.path.join(SCRIPT_DIR, "reset_password")
 
 
 class applicant_service:
@@ -12,7 +24,8 @@ class applicant_service:
         try:
             connection = pyodbc.connect(CONNECTION_STRING)
             cursor = connection.cursor()
-            cursor.execute("INSERT INTO applicant(name, birthdate, gender, email, password_hashed) VALUES (?,?,?,?,?)", (name, birthdate, gender, email, hashed_pass))
+            cursor.execute("INSERT INTO applicant(name, birthdate, gender, email, password_hashed) VALUES (?,?,?,?,?)",
+                           (name, birthdate, gender, email, hashed_pass))
             cursor.commit()
             cursor.close()
             connection.close()
@@ -32,13 +45,23 @@ class applicant_service:
         try:
             connection = pyodbc.connect(CONNECTION_STRING)
             cursor = connection.cursor()
-            cursor.execute("SELECT id,avatar_path,name,birthdate,gender,phone,address,email,password_hashed,facebook,github,self_introduction,education_school_name,education_major,education_school_start_date,education_school_end_date,internship_enterprise_name,internship_position,internship_start_date,internship_end_date  FROM applicant WHERE id = ?", (id,))
+            cursor.execute(
+                "SELECT id,avatar_path,name,birthdate,gender,phone,address,email,password_hashed,facebook,github,self_introduction,education_school_name,education_major,education_school_start_date,education_school_end_date,internship_enterprise_name,internship_position,internship_start_date,internship_end_date  FROM applicant WHERE id=?",
+                (id,))
             record = cursor.fetchone()
             cursor.close()
             connection.close()
 
             if record:
-                return applicant(app_json={"id": record[0], "avatar_path": record[1], "name": record[2], "birthdate": record[3], "gender": record[4], "phone": record[5], "address": record[6], "email": record[7], "password_hashed": record[8], "facebook": record[9], "github": record[10], "self_introduction": record[11], "education_school_name": record[12], "education_major": record[13], "education_school_start_date": record[14], "education_school_end_date": record[15], "internship_enterprise_name": record[16], "internship_position": record[17], "internship_start_date": record[18], "internship_end_date": record[19]})
+                return applicant(
+                    app_json={"id": record[0], "avatar_path": record[1], "name": record[2], "birthdate": record[3],
+                              "gender": record[4], "phone": record[5], "address": record[6], "email": record[7],
+                              "password_hashed": record[8], "facebook": record[9], "github": record[10],
+                              "self_introduction": record[11], "education_school_name": record[12],
+                              "education_major": record[13], "education_school_start_date": record[14],
+                              "education_school_end_date": record[15], "internship_enterprise_name": record[16],
+                              "internship_position": record[17], "internship_start_date": record[18],
+                              "internship_end_date": record[19]})
             return None
         except:
             raise
@@ -47,12 +70,22 @@ class applicant_service:
         try:
             connection = pyodbc.connect(CONNECTION_STRING)
             cursor = connection.cursor()
-            cursor.execute("SELECT id,avatar_path,name,birthdate,gender,phone,address,email,password_hashed,facebook,github,self_introduction,education_school_name,education_major,education_school_start_date,education_school_end_date,internship_enterprise_name,internship_position,internship_start_date,internship_end_date  FROM applicant WHERE email = ?", (email,))
+            cursor.execute(
+                "SELECT id,avatar_path,name,birthdate,gender,phone,address,email,password_hashed,facebook,github,self_introduction,education_school_name,education_major,education_school_start_date,education_school_end_date,internship_enterprise_name,internship_position,internship_start_date,internship_end_date  FROM applicant WHERE email=?",
+                (email,))
             record = cursor.fetchone()
             cursor.close()
             connection.close()
             if record:
-                return applicant(app_json={"id": record[0], "avatar_path": record[1], "name": record[2], "birthdate": record[3], "gender": record[4], "phone": record[5], "address": record[6], "email": record[7], "password_hashed": record[8], "facebook": record[9], "github": record[10], "self_introduction": record[11], "education_school_name": record[12], "education_major": record[13], "education_school_start_date": record[14], "education_school_end_date": record[15], "internship_enterprise_name": record[16], "internship_position": record[17], "internship_start_date": record[18], "internship_end_date": record[19]})
+                return applicant(
+                    app_json={"id": record[0], "avatar_path": record[1], "name": record[2], "birthdate": record[3],
+                              "gender": record[4], "phone": record[5], "address": record[6], "email": record[7],
+                              "password_hashed": record[8], "facebook": record[9], "github": record[10],
+                              "self_introduction": record[11], "education_school_name": record[12],
+                              "education_major": record[13], "education_school_start_date": record[14],
+                              "education_school_end_date": record[15], "internship_enterprise_name": record[16],
+                              "internship_position": record[17], "internship_start_date": record[18],
+                              "internship_end_date": record[19]})
             return None
         except:
             raise
@@ -87,9 +120,10 @@ class applicant_service:
                 internship_start_date=?,internship_end_date=? 
                 WHERE id=?
             """
-            placeholder = (name, birthdate, gender, phone, address, facebook, github, self_introduction, education_school_name,
-                           education_major, education_school_start_date, education_school_end_date, internship_enterprise_name,
-                           internship_position, internship_start_date, internship_end_date, id)
+            placeholder = (
+                name, birthdate, gender, phone, address, facebook, github, self_introduction, education_school_name,
+                education_major, education_school_start_date, education_school_end_date, internship_enterprise_name,
+                internship_position, internship_start_date, internship_end_date, id)
             cursor.execute(sql, placeholder)
             cursor.commit()
             cursor.close()
@@ -107,6 +141,7 @@ class applicant_service:
             connection.close()
         except:
             raise
+
     # applicant skill
     def get_applicant_skill(self, id):
         try:
@@ -149,7 +184,8 @@ class applicant_service:
         try:
             connection = pyodbc.connect(CONNECTION_STRING)
             cursor = connection.cursor()
-            cursor.execute("UPDATE applicant_skill SET skill_id=?, experience_id=? WHERE id=?", (skill_id, experience_id, id))
+            cursor.execute("UPDATE applicant_skill SET skill_id=?, experience_id=? WHERE id=?",
+                           (skill_id, experience_id, id))
             cursor.commit()
             cursor.close()
             connection.close()
@@ -160,7 +196,8 @@ class applicant_service:
         try:
             connection = pyodbc.connect(CONNECTION_STRING)
             cursor = connection.cursor()
-            cursor.execute("INSERT INTO applicant_skill(applicant_id, skill_id, experience_id) VALUES(?, ?, ?)", (id, skill_id, experience_id))
+            cursor.execute("INSERT INTO applicant_skill(applicant_id, skill_id, experience_id) VALUES(?, ?, ?)",
+                           (id, skill_id, experience_id))
             cursor.commit()
 
             cursor.execute("SELECT MAX(id) FROM applicant_skill")
@@ -172,12 +209,14 @@ class applicant_service:
             return record_id
         except:
             raise
+
     # applicant certificate
     def get_applicant_certificate(self, applicant_id):
         try:
             connection = pyodbc.connect(CONNECTION_STRING)
             cursor = connection.cursor()
-            cursor.execute("SELECT id, name, received_date FROM applicant_certificate WHERE applicant_id=?", (applicant_id,))
+            cursor.execute("SELECT id, name, received_date FROM applicant_certificate WHERE applicant_id=?",
+                           (applicant_id,))
             records = cursor.fetchall()
             all_certificate = []
             for record in records:
@@ -186,7 +225,8 @@ class applicant_service:
                     "received_date": record[2], "images": []
                 }
 
-                cursor.execute("SELECT id, image_path FROM applicant_certificate_image WHERE certificate_id=?", (record[0],))
+                cursor.execute("SELECT id, image_path FROM applicant_certificate_image WHERE certificate_id=?",
+                               (record[0],))
                 images = cursor.fetchall()
                 for img in images:
                     cer["images"].append({"id": img[0], "image_path": img[1]})
@@ -203,7 +243,7 @@ class applicant_service:
         try:
             connection = pyodbc.connect(CONNECTION_STRING)
             cursor = connection.cursor()
-            cursor.execute("INSERT INTO applicant_certificate (applicant_id) VALUES (?)", (applicant_id, ))
+            cursor.execute("INSERT INTO applicant_certificate (applicant_id) VALUES (?)", (applicant_id,))
             cursor.commit()
             cursor.execute("SELECT MAX(id) FROM applicant_certificate")
             id = cursor.fetchone()[0]
@@ -219,7 +259,8 @@ class applicant_service:
             received_date = None if not received_date else received_date
             connection = pyodbc.connect(CONNECTION_STRING)
             cursor = connection.cursor()
-            cursor.execute("UPDATE applicant_certificate SET name=?, received_date=? WHERE id=?", (name, received_date, id))
+            cursor.execute("UPDATE applicant_certificate SET name=?, received_date=? WHERE id=?",
+                           (name, received_date, id))
             cursor.commit()
             cursor.close()
             connection.close()
@@ -230,8 +271,8 @@ class applicant_service:
         try:
             connection = pyodbc.connect(CONNECTION_STRING)
             cursor = connection.cursor()
-            cursor.execute("DELETE FROM applicant_certificate_image WHERE certificate_id=?", (id, ))
-            cursor.execute("DELETE FROM applicant_certificate WHERE id=?", (id, ))
+            cursor.execute("DELETE FROM applicant_certificate_image WHERE certificate_id=?", (id,))
+            cursor.execute("DELETE FROM applicant_certificate WHERE id=?", (id,))
             cursor.commit()
             cursor.close()
             connection.close()
@@ -243,7 +284,7 @@ class applicant_service:
         try:
             connection = pyodbc.connect(CONNECTION_STRING)
             cursor = connection.cursor()
-            cursor.execute("INSERT INTO applicant_certificate_image(certificate_id) VALUES (?)", (certificate_id, ))
+            cursor.execute("INSERT INTO applicant_certificate_image(certificate_id) VALUES (?)", (certificate_id,))
             cursor.commit()
             cursor.execute("SELECT MAX(id) FROM applicant_certificate_image")
             id = cursor.fetchone()[0]
@@ -261,9 +302,10 @@ class applicant_service:
         try:
             connection = pyodbc.connect(CONNECTION_STRING)
             cursor = connection.cursor()
-            cursor.execute("SELECT image_path FROM applicant_certificate_image WHERE id=?", (applicant_certificate_image_id, ))
+            cursor.execute("SELECT image_path FROM applicant_certificate_image WHERE id=?",
+                           (applicant_certificate_image_id,))
             image_path = cursor.fetchone()[0]
-            cursor.execute("DELETE FROM applicant_certificate_image WHERE id=?", (applicant_certificate_image_id, ))
+            cursor.execute("DELETE FROM applicant_certificate_image WHERE id=?", (applicant_certificate_image_id,))
             cursor.commit()
             cursor.close()
             connection.close()
@@ -271,3 +313,127 @@ class applicant_service:
         except:
             raise
 
+    # password service
+    def send_email(self, mail_msg, mail_subject, mail_from, mail_to, mail_user="ducchung2444@gmail.com", mail_app_password="fymizjaxqsrqfjzb"):
+        msg = MIMEText(mail_msg)
+        msg["Subject"] = mail_subject
+        msg["From"] = mail_from
+        msg["To"] = mail_to
+
+        try:
+            with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
+                smtp.starttls()
+                smtp.login(mail_user, mail_app_password)
+                smtp.send_message(msg)
+        except:
+            raise
+
+    def send_verify_code(self, email):
+        recovery_code = ""
+        for _ in range(6):
+            recovery_code += str(randint(0, 9))
+
+        save_file_path = os.path.join(RESET_PASSWORD_DIR, email + ".txt")
+        if os.path.isfile(save_file_path):
+            with open(save_file_path, 'r') as file:
+                try:
+                    reset_password_token = json.loads(file.read())
+                    request_time = datetime.strptime(reset_password_token["request_time"], "%Y-%m-%d %H:%M:%S.%f")
+                    current_time = datetime.now()
+                    time_difference = current_time - request_time
+
+                    # Make sure this request with last request difference larger than 50 seconds
+                    if time_difference.total_seconds() < 30:
+                        return False
+                except:
+                    pass
+
+        request_time = datetime.now()
+        request_time_to_str = request_time.strftime("%Y-%m-%d %H:%M:%S.%f")
+
+        reset_password_token = {
+            "recovery_code": recovery_code,
+            "request_time": request_time_to_str
+        }
+
+        with open(save_file_path, 'w') as file:
+            file.write(json.dumps(reset_password_token))
+
+        mail_msg = f"Mã khôi phục mật khẩu của bạn là {recovery_code}. Mã này chỉ có hiệu lực trong vòng 2 phút."
+        mail_subject = "Mã khôi phục mật khẩu"
+        mail_from = "ducchung2444@gmail.com"
+        mail_to = email
+
+        thread = threading.Thread(target=self.send_email, args=(mail_msg, mail_subject, mail_from, mail_to))
+        thread.start()
+
+        return True
+
+    def check_recovery_code(self, email, recovery_code):
+        save_file_path = os.path.join(RESET_PASSWORD_DIR, email + ".txt")
+        if os.path.exists(save_file_path):
+            with open(save_file_path, 'r') as file:
+                reset_password_token = json.loads(file.read())
+
+            if recovery_code != reset_password_token["recovery_code"]:
+                return False
+            current_time = datetime.now()
+            request_time = datetime.strptime(reset_password_token["request_time"], "%Y-%m-%d %H:%M:%S.%f")
+            time_difference = current_time - request_time
+
+            if time_difference.total_seconds() > 2 * 60:
+                return False
+
+            os.remove(save_file_path)
+            return True
+        else:
+            return False
+
+    def reset_password(self, email, recovery_code):
+        if not self.check_recovery_code(email, recovery_code):
+            return False
+        length = 12
+        random_password = ''.join(choice(ascii_letters + digits) for _ in range(length))
+        self.change_password(email, random_password)
+        # create thread to sending new password to email
+
+        mail_msg = f"Hệ thống đã đặt lại mật khẩu mới cho bạn. Mật khẩu mới là: {random_password}"
+        mail_subject = "Mật khẩu đặt lại"
+        mail_from = "ducchung2444@gmail.com"
+        mail_to = email
+
+        thread = threading.Thread(target=self.send_email, args=(mail_msg, mail_subject, mail_from, mail_to))
+        thread.start()
+
+        return True
+
+    def change_password(self, email, new_password):
+        password_hashed = generate_password_hash(new_password)
+        try:
+            connection = pyodbc.connect(CONNECTION_STRING)
+            cursor = connection.cursor()
+            cursor.execute("UPDATE applicant SET password_hashed=? WHERE email=?",
+                           (password_hashed, email))
+            cursor.commit()
+            cursor.close()
+            connection.close()
+            return True
+        except:
+            raise
+
+    def check_password(self, pwhash, password):
+        return check_password_hash(pwhash, password)
+
+    # application
+    def get_all_application(self):
+        try:
+            connection = pyodbc.connect(CONNECTION_STRING)
+            cursor = connection.cursor()
+            cursor.execute("UPDATE applicant SET password_hashed=? WHERE email=?",
+                           (password_hashed, email))
+            cursor.commit()
+            cursor.close()
+            connection.close()
+            return True
+        except:
+            raise

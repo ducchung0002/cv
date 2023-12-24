@@ -1,24 +1,23 @@
-let avatar = document.getElementById("avatar");
-let name = document.getElementById("name");
-let birthdate = document.getElementById("birthdate");
-let male = document.getElementById("male");
-let phone = document.getElementById("phone");
-let address = document.getElementById("address");
-let email = document.getElementById("email");
-let facebook = document.getElementById("facebook");
-let github = document.getElementById("github");
-let self_introduction = document.getElementById("self_introduction");
-let education_school_name = document.getElementById("education_school_name");
-let education_major = document.getElementById("education_major");
-let education_school_start_date = document.getElementById("education_school_start_date");
-let education_school_end_date = document.getElementById("education_school_end_date");
-let internship_enterprise_name = document.getElementById("internship_enterprise_name");
-let internship_position = document.getElementById("internship_position");
-let internship_start_date = document.getElementById("internship_start_date");
-let internship_end_date = document.getElementById("internship_end_date");
+const avatar = document.getElementById("avatar");
+const name = document.getElementById("name");
+const birthdate = document.getElementById("birthdate");
+const male = document.getElementById("male");
+const phone = document.getElementById("phone");
+const address = document.getElementById("address");
+const email = document.getElementById("email");
+const facebook = document.getElementById("facebook");
+const github = document.getElementById("github");
+const self_introduction = document.getElementById("self_introduction");
+const education_school_name = document.getElementById("education_school_name");
+const education_major = document.getElementById("education_major");
+const education_school_start_date = document.getElementById("education_school_start_date");
+const education_school_end_date = document.getElementById("education_school_end_date");
+const internship_enterprise_name = document.getElementById("internship_enterprise_name");
+const internship_position = document.getElementById("internship_position");
+const internship_start_date = document.getElementById("internship_start_date");
+const internship_end_date = document.getElementById("internship_end_date");
 
-function fill_profile_information() {
-    avatar.src = "data:image/jpeg;base64," + applicant["avatar"];
+async function fill_profile_information() {
     if (applicant["avatar"] === null || applicant["avatar"] === "") {
         avatar.src = applicant["gender"] ? "images/man.png" : "images/woman.png";
     } else {
@@ -135,6 +134,5 @@ axios.post("http://127.0.0.1:5000/applicant/profile", formData, {
     fill_profile_information().then((ignored) => {
     });
 }).catch((ignored) => {
-    // window.location.href = "login.html";
-    console.log(ignored)
+    window.location.href = "login.html";
 });

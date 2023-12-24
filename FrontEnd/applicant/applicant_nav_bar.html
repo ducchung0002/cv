@@ -1,0 +1,18 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+    <div class="container-fluid">
+        <div class="nav-item">
+            <a href="javascript:void(0)" class="navbar-brand" onclick="switch_view_homepage()">Trang chủ</a>
+            <a href="javascript:void(0)" class="navbar-brand" onclick="switch_view_application()">Ứng tuyển</a>
+        </div>
+        <div class="nav-item dropdown justify-content-end">
+            <a id="navbar_hidden_options" class="nav-link dropdown-toggle" href="javascript:void(0)" role="button" data-bs-toggle="dropdown"></a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="javascript:void(0)" onclick="switch_view_profile()">Trang cá nhân</a></li>
+                <li><a class="dropdown-item" href="javascript:void(0)" onclick="switch_view_change_password()">Đổi mật khẩu</a></li>
+                <li><a class="dropdown-item" href="javascript:void(0)" onclick="switch_view_logout()">Đăng xuất</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<script src="/applicant/js/applicant_nav_bar.js"></script>

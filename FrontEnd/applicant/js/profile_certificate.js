@@ -1,7 +1,6 @@
 /*
  * GLOBALS
  */
-let applicant_certificate;
 
 /*
  * trigger
@@ -228,7 +227,7 @@ axios.get("http://127.0.0.1:5000/applicant/certificate", {
         "command": "get_certificate"
     }
 }).then(function (response) {
-    console.log(response.data);
+    let applicant_certificate;
     if (response.data["success"]) {
         applicant_certificate = response.data["applicant_certificate"];
         let certificate_container = document.getElementById("certificate_container");

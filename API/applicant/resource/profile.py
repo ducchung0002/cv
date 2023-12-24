@@ -1,4 +1,3 @@
-
 from flask_restful import Resource
 from flask import jsonify, request, send_file
 from flask_jwt_extended import get_jwt_identity
@@ -24,6 +23,14 @@ class profile(Resource):
                     return jsonify(applicant=applicant.jsonify(), success=True)
                 if command == "get_avatar":
                     return send_file(request.form.get("image_path"))
+                if command == "change_password":
+                    old_password = request.form.get("old_password")
+                    new_password = request.form.get("new_password")
+                    if app_ser.check_password(applicant.password_hashed, old_password):
+                        app_ser.change_password(applicant.email, new_password)
+                        return jsonify(success=True, msg="Change password successfully")
+                    return jsonify(success=False, msg="Change password failed")
+                return jsonify(success=False, msg="No command is found!")
             else:
                 return jsonify(success=False, msg="No applicants is founded!")
         except Exception as exception:

@@ -9,7 +9,7 @@ function convert_python_date_format(py_date) {
     return "";
 }
 
-function showImage(image_source) {
+async function showImage(image_source) {
     let largeImageDiv = document.getElementById('largeImageDiv');
     let largeImage = document.getElementById('largeImage');
 
@@ -19,7 +19,7 @@ function showImage(image_source) {
     largeImageDiv.style.display = 'block';
 }
 
-function hide_large_image_show() {
+async function hide_large_image_show() {
     let largeImageDiv = document.getElementById('largeImageDiv');
     largeImageDiv.style.display = 'none';
 }

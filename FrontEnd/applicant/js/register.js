@@ -1,9 +1,9 @@
-let name = document.getElementById("name")
-let birthdate = document.getElementById("birthdate")
-let gender_male = document.getElementById("male")
-let email = document.getElementById("email")
-let password = document.getElementById("password")
-let confirm_password = document.getElementById("confirm_password")
+const name = document.getElementById("name");
+const birthdate = document.getElementById("birthdate");
+const gender_male = document.getElementById("male");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+const confirm_password = document.getElementById("confirm_password");
 
 function submit() {
     if (name.checkValidity() === false || name.value.trim().length === 0) {

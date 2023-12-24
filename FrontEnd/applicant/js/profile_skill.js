@@ -1,8 +1,7 @@
-let all_skill_type;
-let all_skill;
-let all_experience;
-let applicant_skill;
-let skill_type_dict;
+/*
+ * Globals
+ */
+
 
 /*
  * Reload skill dropdown when skill type onchange
@@ -244,7 +243,7 @@ async function profile_skill_init() {
             "Authorization": `Bearer ${access_token}`
         }
     }).then(function (response) {
-        all_skill = response.data["skill"];
+        let all_skill = response.data["skill"];
         all_skill.forEach((sk) => {
             if (skill_type_dict[sk["skill_type_id"]]["skill"] === undefined) {
                 skill_type_dict[sk["skill_type_id"]]["skill"] = []
@@ -256,5 +255,5 @@ async function profile_skill_init() {
         console.log(`Error: ${error}`);
     });
 }
-profile_skill_init().then(r => load_skill_information());
+profile_skill_init().then((ignored) => load_skill_information());
 

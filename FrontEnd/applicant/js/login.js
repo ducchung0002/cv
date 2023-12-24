@@ -1,23 +1,22 @@
-let email = document.getElementById("email");
-let password = document.getElementById("password");
-email.value = localStorage.getItem("email");
-password.value = localStorage.getItem("password");
+async function login() {
+    const email = document.getElementById("email");
+    const password = document.getElementById("password");
 
-function login() {
     let data = {
         email: email.value,
         password: password.value
     }
 
     axios.post("http://127.0.0.1:5000/applicant/login", data)
-        .then((response) => {
+        .then(response => {
             if (response.data["success"] === true) {
                 localStorage.setItem("email", email.value);
                 localStorage.setItem("password", password.value);
                 localStorage.setItem("access_token", response.data["access_token"]);
-                window.location.replace("/../FrontEnd/applicant/profile.html");
+                window.location.replace("/../FrontEnd/applicant/index.html");
             } else {
-                alert("Tài khoản không tồn tại!");
+                alert("Tài khoản không tồn tại!: " + password.value);
+
             }
         })
         .catch((error) => {

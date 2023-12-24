@@ -17,14 +17,9 @@ let internship_position = document.getElementById("internship_position");
 let internship_start_date = document.getElementById("internship_start_date");
 let internship_end_date = document.getElementById("internship_end_date");
 
-/*
- * Globals
- */
-
-let applicant;
-
-async function fill_profile_information() {
-    if (applicant["avatar_path"] === null) {
+function fill_profile_information() {
+    avatar.src = "data:image/jpeg;base64," + applicant["avatar"];
+    if (applicant["avatar"] === null || applicant["avatar"] === "") {
         avatar.src = applicant["gender"] ? "images/man.png" : "images/woman.png";
     } else {
         let formData = new FormData();

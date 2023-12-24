@@ -1,0 +1,12 @@
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<img id="avatar">
+<script>
+    axios.get('http://localhost:5000/get_image/trucmy.jpg', { responseType: 'blob' })
+        .then(response => {
+            let blob = new Blob([response.data], { type: "image" });
+            document.getElementById('avatar').src = URL.createObjectURL(blob);
+        })
+        .catch(error => {
+            console.error(error);
+        });
+</script>

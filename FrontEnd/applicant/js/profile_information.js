@@ -18,11 +18,27 @@ let internship_start_date = document.getElementById("internship_start_date");
 let internship_end_date = document.getElementById("internship_end_date");
 
 function fill_profile_information() {
-    debugger;
-    console.log(applicant["avatar"]);
     avatar.src = "data:image/jpeg;base64," + applicant["avatar"];
     if (applicant["avatar"] === null || applicant["avatar"] === "") {
         avatar.src = applicant["gender"] ? "images/man.png" : "images/woman.png";
+    } else {
+        let formData = new FormData();
+        formData.append("image_path", applicant["avatar_path"]);
+        formData.append("command", "get_avatar");
+
+        axios.post("http://localhost:5000/applicant/profile", formData, {
+            headers: {
+                "Authorization": `Bearer ${access_token}`,
+                "Content-Type": "multipart/form-data"
+            }, responseType: "blob"
+        })
+            .then(response => {
+                let blob = new Blob([response.data], {type: "image"});
+                avatar.src = URL.createObjectURL(blob);
+            })
+            .catch(error => {
+                console.error(error);
+            });
     }
     document.title = name.value = applicant["name"];
     birthdate.value = convert_python_date_format(applicant["birthdate"]);
@@ -46,76 +62,78 @@ function fill_profile_information() {
 /*
  * Update trigger
  */
-function update_profile_information() {
-    let data = {
-        name: name.value,
-        birthdate: birthdate.value,
-        gender: male.checked,
-        phone: phone.value,
-        address: address.value,
-        facebook: facebook.value,
-        github: github.value,
-        self_introduction: self_introduction.value,
-        education_school_name: education_school_name.value,
-        education_major: education_major.value,
-        education_school_start_date: education_school_start_date.value,
-        education_school_end_date: education_school_end_date.value,
-        internship_enterprise_name: internship_enterprise_name.value,
-        internship_position: internship_position.value,
-        internship_start_date: internship_start_date.value,
-        internship_end_date: internship_end_date.value
-    }
-    axios.put("http://127.0.0.1:5000/applicant/update_profile", data, {
-        headers: {
-            "Authorization": `Bearer ${access_token}`
-        }
-    })
-        .then((response) => {
-            console.log(response.data)
-            alert("Cập nhật hồ sơ thành công!");
-        })
-        .catch((error) => {
-            console.error(`Error: ${error}`);
-            alert("Cập nhật hồ sơ thất bại!");
-        });
-}
-
-function update_avatar() {
-    let file = document.getElementById("fileInput").files[0];
-    let reader = new FileReader();
-    reader.onload = function (e) {
-        document.getElementById("avatar").src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-    // upload to backend
+async function update_profile_information() {
     let formData = new FormData();
-    formData.append("avatar", file);
-    axios.put("http://127.0.0.1:5000/applicant/update_avatar", formData, {
+    formData.append("name", name.value);
+    formData.append("birthdate", birthdate.value);
+    formData.append("gender", male.checked);
+    formData.append("self_introduction", self_introduction.value);
+    formData.append("phone", phone.value);
+    formData.append("address", address.value);
+    formData.append("facebook", facebook.value);
+    formData.append("github", github.value);
+    formData.append("education_school_name", education_school_name.value);
+    formData.append("education_major", education_major.value);
+    formData.append("education_school_start_date", education_school_start_date.value);
+    formData.append("education_school_end_date", education_school_end_date.value);
+    formData.append("internship_enterprise_name", internship_enterprise_name.value);
+    formData.append("internship_position", internship_position.value);
+    formData.append("internship_start_date", internship_start_date.value);
+    formData.append("internship_end_date", internship_end_date.value);
+    formData.append("command", "update_profile");
+
+    axios.put("http://127.0.0.1:5000/applicant/profile", formData, {
         headers: {
             "Authorization": `Bearer ${access_token}`,
             "Content-Type": "multipart/form-data"
         }
+    }).then((response) => {
+        if (response.data["success"])
+            alert("Cập nhật hồ sơ thành công!");
     })
-        .then(function (response) {
-            console.log(response.data);
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
+    .catch((error) => {
+        console.error(`Update profile information error: ${error}`);
+        alert("Cập nhật hồ sơ thất bại!");
+    });
+}
+
+async function update_avatar() {
+    let file = document.getElementById("fileInput").files[0];
+    let formData = new FormData();
+    formData.append("avatar", file);
+    formData.append("command", "update_avatar");
+
+    axios.put("http://127.0.0.1:5000/applicant/profile", formData, {
+        headers: {
+            "Authorization": `Bearer ${access_token}`,
+            "Content-Type": "multipart/form-data"
+        },
+        responseType: "blob"
+    }).then(function (response) {
+        let blob = new Blob([response.data], {type: "image"});
+        avatar.src = URL.createObjectURL(blob);
+    }).catch(function (error) {
+        console.log(`Update avatar error: ${error}`);
+    });
 }
 
 avatar.onclick = () => {
     document.getElementById('fileInput').click();
 }
 
-axios.get("http://127.0.0.1:5000/applicant/profile", {
+let formData = new FormData();
+formData.append("command", "get_applicant");
+
+axios.post("http://127.0.0.1:5000/applicant/profile", formData, {
     headers: {
-        "Authorization": `Bearer ${access_token}`
+        "Authorization": `Bearer ${access_token}`,
+        "Content-Type": "multipart/form-data"
     }
 }).then(function (response) {
     console.log(response.data);
     applicant = response.data["applicant"];
-    fill_profile_information();
-}).catch((error) => {
-    console.log(`Error: ${error}`);
+    fill_profile_information().then((ignored) => {
+    });
+}).catch((ignored) => {
+    window.location.href = "login.html";
 });

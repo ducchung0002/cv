@@ -6,5 +6,20 @@ function convert_python_date_format(py_date) {
         let day = ("0" + date.getUTCDate()).slice(-2);
         return `${year}-${month}-${day}`;
     }
-    return null;
+    return "";
+}
+
+function showImage(image_source) {
+    let largeImageDiv = document.getElementById('largeImageDiv');
+    let largeImage = document.getElementById('largeImage');
+
+    // Set the source of the large image to be the same as the small image
+    largeImage.src = image_source;
+
+    largeImageDiv.style.display = 'block';
+}
+
+function hide_large_image_show() {
+    let largeImageDiv = document.getElementById('largeImageDiv');
+    largeImageDiv.style.display = 'none';
 }

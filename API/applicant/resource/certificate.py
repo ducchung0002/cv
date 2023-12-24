@@ -3,6 +3,7 @@ from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from service.applicant.applicant_service import applicant_service
 import os
+import shutil
 from werkzeug.utils import secure_filename
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))  # resource
@@ -47,9 +48,8 @@ class certificate(Resource):
                     # update path in database and get file name
                     applicant_certificate_image_id, image_path = app_ser.insert_applicant_certificate_image(applicant_certificate_id, certificate_image_dir_path, extension)
                     # save image
-                    certificate_image_path = os.path.join(certificate_image_dir_path, image_path)
-                    image.save(certificate_image_path)
-                    return jsonify(success=True, applicant_certificate_image_id=applicant_certificate_image_id, image_path=certificate_image_path)
+                    image.save(image_path)
+                    return jsonify(success=True, applicant_certificate_image_id=applicant_certificate_image_id, image_path=image_path)
                 elif command == "insert_certificate":
                     applicant_certificate_id = app_ser.insert_applicant_certificate(applicant.id)
                     return jsonify(success=True, applicant_certificate_id=applicant_certificate_id)
@@ -86,11 +86,19 @@ class certificate(Resource):
             applicant = app_ser.get_applicant_by_id(token["id"])
             if applicant and applicant.email == token["email"]:
                 command = request.form.get("command")
+                print("command: ", command)
                 if command == "delete_applicant_certificate":
-                    app_ser.delete_applicant_certificate(request.form.get("applicant_certificate_id"))
+                    applicant_certificate_id = request.form.get("applicant_certificate_id")
+                    applicant_certificate_image_dir = os.path.join(CERTIFICATE_DIR, str(applicant.id), str(applicant_certificate_id))
+                    print("applicant certificate image dir", applicant_certificate_image_dir)
+                    if os.path.exists(applicant_certificate_image_dir):
+                        shutil.rmtree(applicant_certificate_image_dir)
+                    app_ser.delete_applicant_certificate(applicant_certificate_id)
                     return jsonify(success=True, msg="Delete applicant certificate successfully!")
                 if command == "delete_applicant_certificate_image":
-                    app_ser.delete_applicant_certificate_image(request.form.get("applicant_certificate_image_id"))
+                    image_path = app_ser.delete_applicant_certificate_image(request.form.get("applicant_certificate_image_id"))
+                    if os.path.isfile(image_path):
+                        os.remove(image_path)
                     return jsonify(success=True, msg="Delete applicant certificate image successfully!")
                 return jsonify(success=False, msg="No command is found!")
             else:

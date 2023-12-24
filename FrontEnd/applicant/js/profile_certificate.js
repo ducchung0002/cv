@@ -72,6 +72,7 @@ async function delete_applicant_certificate(applicant_certificate_id) {
     }).then((response) => {
         if (response.data["success"]) {
             let container = document.getElementById(`applicant_certificate_${applicant_certificate_id}`);
+            console.log("Delete: ", container);
             container.remove();
         }
     }).catch((error) => {
@@ -99,9 +100,9 @@ async function insert_certificate_image(applicant_certificate_id) {
         if (response.data["success"]) {
             let applicant_certificate_image_id = response.data["applicant_certificate_image_id"];
             let image_path = response.data["image_path"]
-            let image_container = document.getElementById(`image_container_${applicant_certificate_id}`);
-            let img = await create_certificate_image(applicant_certificate_image_id, image_path);
-            image_container.appendChild(img);
+            let image_container = document.getElementById(`certificate_image_container_${applicant_certificate_id}`);
+            let image_col = await create_certificate_image_col_element(applicant_certificate_image_id, image_path);
+            image_container.appendChild(image_col);
         } else {
             console.log(response.data);
         }
@@ -122,15 +123,17 @@ async function delete_certificate_image(applicant_certificate_image_id) {
         }
     }).then((response) => {
         if (response.data["success"]) {
-            let container = document.getElementById(`certificate_image_${applicant_certificate_image_id}`);
-            container.remove();
+            let col = document.getElementById(`certificate_image_col_${applicant_certificate_image_id}`);
+            col.remove();
         }
     }).catch((error) => {
         console.log("Delete certificate image error: ", error);
     });
 }
 
-async function create_certificate_image(applicant_certificate_image_id, image_path) {
+// Input: applicant_certificate_image_id, image_path
+// Output: Image element, get image from flask server by image_path
+async function create_certificate_image_element(applicant_certificate_image_id, image_path) {
     let img = document.createElement("img");
     img.classList.add("img-fluid");
 
@@ -150,7 +153,22 @@ async function create_certificate_image(applicant_certificate_image_id, image_pa
     });
     return img;
 }
-
+/**
+ * [Create a certificate image column for specific certificate]
+ */
+async function create_certificate_image_col_element(applicant_certificate_image_id, image_path) {
+    let certificate_image_col = document.createElement("div");
+    certificate_image_col.id = `certificate_image_col_${applicant_certificate_image_id}`;
+    certificate_image_col.classList.add("position-relative", "col-2", "m-1", "certificate-image-col");
+    let img = await create_certificate_image_element(applicant_certificate_image_id, image_path);
+    img.classList.add("certificate-image");
+    certificate_image_col.innerHTML = `
+            ${img.outerHTML}
+            <button class="btn btn-primary p-1" style="position: absolute; top: 5px; left: 5px;" onclick="showImage('${img.src}')"><i class="bi bi-zoom-in"></i></button>
+            <button class="btn btn-danger p-1" style="position: absolute; top: 5px; right: 5px;" onclick="delete_certificate_image(${applicant_certificate_image_id})"><i class="bi bi-x-square"></i></button>
+            `;
+    return certificate_image_col;
+}
 /*
  * End CRUD certificate image
  */
@@ -182,14 +200,16 @@ async function create_certificate_row(applicant_certificate_id, certificate_name
     <button class="col-1 btn btn-outline-primary p-1 mb-2" onclick="trigger_file_input(${applicant_certificate_id})"><i class="bi bi-plus-square"></i></button>
     <input type="file" id="image_select_${applicant_certificate_id}" style="display:none;" onchange="insert_certificate_image(${applicant_certificate_id})"/>
 </div>
-<div class="row" id="image_container_${applicant_certificate_id}">`;
+<div class="row" id="certificate_image_container_${applicant_certificate_id}">`;
 
     Promise.all(images.map(async (image) => {
-        let img = await create_certificate_image(image["id"], image["image_path"]);
-        innerHTML += `<div id="certificate_image_${image["id"]}" class="position-relative col-2 m-1" style="width: 150px;">`;
-        innerHTML += img.outerHTML;
-        innerHTML += `<button class="btn btn-outline-danger p-1" style="position: absolute; top: 5px; right: 5px;" onclick="delete_certificate_image(${image["id"]})"><i class="bi bi-x-square p-3"></i></button>
-                    </div>`;
+        // let img = await create_certificate_image_element(image["id"], image["image_path"]);
+        // innerHTML += `<div id="certificate_image_${image["id"]}" class="position-relative col-2 m-1" style="width: 150px;">`;
+        // innerHTML += img.outerHTML;
+        // innerHTML += `<button class="btn btn-outline-danger p-1" style="position: absolute; top: 5px; right: 5px;" onclick="delete_certificate_image(${image["id"]})"><i class="bi bi-x-square p-3"></i></button>
+        //             </div>`;
+        let image_col = await create_certificate_image_col_element(image["id"], image["image_path"]);
+        innerHTML += image_col.outerHTML;
     })).then(ignored => {
         innerHTML += "</div></div>";
         row.innerHTML = innerHTML;

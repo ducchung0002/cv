@@ -17,10 +17,17 @@
     <script>
         let access_token = localStorage.getItem("access_token");
     </script>
+
+    <link rel="stylesheet" href="css/profile.css">
 </head>
 
 
 <body>
+
+<div id="largeImageDiv">
+    <img id="largeImage" src="" alt="Large Image" style="width: 100%; height: 100%; object-fit: contain;">
+    <button class="btn btn-primary" onclick="hide_large_image_show()" style="position: fixed; top: 5%; right: 5%;">Đóng</button>
+</div>
 
 <div class="container">
     <div class="profile row container" id="applicant_information">

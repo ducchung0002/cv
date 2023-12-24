@@ -230,12 +230,6 @@ class applicant_service:
         try:
             connection = pyodbc.connect(CONNECTION_STRING)
             cursor = connection.cursor()
-            cursor.execute("SELECT image_path FROM applicant_certificate_image WHERE certificate_id=?", (id, ))
-            image_path = cursor.fetchall()
-            for img_p in image_path:
-                if os.path.isfile(img_p[0]):
-                    os.remove(img_p[0])
-
             cursor.execute("DELETE FROM applicant_certificate_image WHERE certificate_id=?", (id, ))
             cursor.execute("DELETE FROM applicant_certificate WHERE id=?", (id, ))
             cursor.commit()
@@ -254,7 +248,8 @@ class applicant_service:
             cursor.execute("SELECT MAX(id) FROM applicant_certificate_image")
             id = cursor.fetchone()[0]
             image_path = os.path.join(certificate_image_dir_path, str(id) + extension)
-            cursor.execute("UPDATE applicant_certificate_image SET image_path=? WHERE certificate_id=?", (image_path, certificate_id))
+            cursor.execute("UPDATE applicant_certificate_image SET image_path=? WHERE id=?", (image_path, id))
+            cursor.commit()
             cursor.close()
             connection.close()
 
@@ -266,10 +261,13 @@ class applicant_service:
         try:
             connection = pyodbc.connect(CONNECTION_STRING)
             cursor = connection.cursor()
+            cursor.execute("SELECT image_path FROM applicant_certificate_image WHERE id=?", (applicant_certificate_image_id, ))
+            image_path = cursor.fetchone()[0]
             cursor.execute("DELETE FROM applicant_certificate_image WHERE id=?", (applicant_certificate_image_id, ))
             cursor.commit()
             cursor.close()
             connection.close()
+            return image_path
         except:
             raise
 

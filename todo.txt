@@ -3,11 +3,6 @@
     / => /job
         Hiển thị các banner tìm việc
         Tìm kiếm công ty theo tên, vị trí ứng tuyển, lương, địa điểm làm việc
-            Flask trả về:
-                recruiment: list chứa chi tiết các tuyển dụng của các doanh nghiệp
-                    company-id
-                    company-name
-                    company-
     /job/<job-id>
         Chi tiết công việc
     /job/<enterprise_id>
@@ -160,13 +155,16 @@ database cv:
         name: tên công ty
         introduction: Giới thiệu công ty
         homepage: trang web của công ty
+        company type
+        company size
             // Các chi nhánh
             enterprise_address:
+                id
+                enterprise-id
                 province
                 ward
                 district
                 street
-                enterprise-id
     ===================================
     enterprise_admin: Admin doanh nghiệp
         name: tên
@@ -189,9 +187,11 @@ database cv:
         max_salary: 30tr
         enterprise_id: id doanh nghiệp
         deadline: Hạn nộp hồ sơ
+        postdate
     
         // yêu cầu kỹ năng profile_skill, cho việc tìm kiếm
         recruiment_skill:
+            id
             recruiment_id
             skill_id
             experience_id
@@ -199,10 +199,11 @@ database cv:
     ===================================
     
     application_record: Đơn ứng tuyển
+        id
         applicant_id: id người ứng tuyển
         recruiment_id: id tuyển dụng
-        submit_date: ngày ứng tuyển
         application_status_id: trạng thái
+        submit_date: ngày ứng tuyển
 
     application_status:
         id: 0,1,2

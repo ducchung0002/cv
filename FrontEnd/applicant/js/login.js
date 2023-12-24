@@ -15,7 +15,7 @@ function login() {
                 localStorage.setItem("email", email.value);
                 localStorage.setItem("password", password.value);
                 localStorage.setItem("access_token", response.data["access_token"]);
-                window.location.replace("profile.html");
+                window.location.replace("/../FrontEnd/applicant/profile.html");
             } else {
                 alert("Tài khoản không tồn tại!");
             }

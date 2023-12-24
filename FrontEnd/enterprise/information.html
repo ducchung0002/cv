@@ -1,0 +1,28 @@
+<div class="avatar row">
+     <div class="p-lg-2">
+         <img class="rounded-circle shadow-lg" style="width: 200px; height: 200px; cursor:pointer;" alt="avatar" id="avatar" src="images/logo.jpg"/>
+         <input type="file" id="fileInput" style="display:none;" onchange="update_avatar()"/>
+     </div>
+ </div>
+ <div class="row">
+     <div class="information col">
+         <p class="display-5">Thông tin doanh nghiệp</p>
+         <div class="form-floating form-outline form-white mb-2 col-sm-10">
+             <input type="text" name="name" id="name" class="form-control form-control-lg" placeholder="Tên doanh nghiệp"/>
+             <label class="form-label" for="name">Tên doanh nghiệp</label>
+         </div>
+         <div class="form-floating form-outline form-white mb-2 col-sm-10">
+             <textarea name="introduction" id="introduction" class="form-control form-control-lg" placeholder="Giới thiệu doanh nghiệp" style="height: 105px"></textarea>
+             <label for="introduction" class="form-label">Giới thiệu doanh nghiệp</label>
+         </div>
+         <div class="form-floating form-outline form-white mb-2 col-sm-10">
+             <input type="text" name="homepage" id="homepage" class="form-control form-control-lg" placeholder="Trang chủ doanh nghiệp"/>
+             <label for="homepage" class="form-label">Trang chủ doanh nghiệp</label>
+         </div>
+     </div>
+ </div>
+ <div class="row justify-content-md-center">
+     <button class="btn btn-primary col col-lg-3 mt-lg-4" onclick="update_information()">Cập nhật thông tin doanh nghiệp</button>
+ </div>
+ <script src="js/information.js"></script>
+ 

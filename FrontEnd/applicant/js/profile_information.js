@@ -18,6 +18,8 @@ let internship_start_date = document.getElementById("internship_start_date");
 let internship_end_date = document.getElementById("internship_end_date");
 
 function fill_profile_information() {
+    debugger;
+    console.log(applicant["avatar"]);
     avatar.src = "data:image/jpeg;base64," + applicant["avatar"];
     if (applicant["avatar"] === null || applicant["avatar"] === "") {
         avatar.src = applicant["gender"] ? "images/man.png" : "images/woman.png";

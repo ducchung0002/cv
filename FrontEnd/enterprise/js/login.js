@@ -15,7 +15,10 @@ function login() {
                 localStorage.setItem("email", email.value);
                 localStorage.setItem("password", password.value);
                 localStorage.setItem("access_token", response.data["access_token"]);
-                window.location.replace("profile.html");
+                if(response.data["role"] === 0)
+                    window.location.replace("index.html");
+                else 
+                    window.location.replace("admin.html");
             } else {
                 alert("Tài khoản không tồn tại!");
             }

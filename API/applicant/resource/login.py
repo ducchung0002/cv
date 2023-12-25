@@ -11,6 +11,8 @@ class login(Resource):
             password = request.json.get("password", None)
             app_ser = applicant_service()
             applicant = app_ser.valid_login(email, password)
+            print("--------------------------")
+            print(applicant.identity())
             if applicant:
                 return jsonify(success=True, access_token=create_access_token(identity=applicant.identity()), msg="Login success!")
             else:

@@ -135,5 +135,6 @@ axios.post("http://127.0.0.1:5000/applicant/profile", formData, {
     fill_profile_information().then((ignored) => {
     });
 }).catch((ignored) => {
-    window.location.href = "login.html";
+    // window.location.href = "login.html";
+    console.log(ignored)
 });

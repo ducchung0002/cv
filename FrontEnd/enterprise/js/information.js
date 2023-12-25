@@ -13,26 +13,33 @@ function fill_profile_information() {
      homepage.value = enterprise["homepage"]?enterprise["homepage"]:""
 }
 
-function update_profile_information() {
-     let data = {
-          name: name.value,
-          introduction: introduction.value,
-          homepage: homepage.value 
-     }
-     axios.put("http://127.0.0.1:5000/enterprise/update_profile", data, {
-          headers: {
-              "Authorization": `Bearer ${access_token}`
-          }
-      })
-      .then((response) => {
-          console.log(response.data)
-          alert("Cập nhật hồ sơ thành công!");
-      })
-      .catch((error) => {
-          console.error(`Error: ${error}`);
-          alert("Cập nhật hồ sơ thất bại!");
-      });
+async function update_information() {
+    let formData = new FormData();
+    formData.append("name", name.value);
+    formData.append("introduction", introduction.value);
+    formData.append("homepage", homepage.value);
+    formData.append("command", "update_profile");
+    console.log(name.value);
+    console.log(introduction.value);
+    console.log(homepage.value);
+    axios.put("http://127.0.0.1:5000/enterprise/profile", formData, {
+        headers: {
+            "Authorization": `Bearer ${access_token}`,
+            "Content-Type": "multipart/form-data"
+        }
+    }).then((response) => {
+        if (response.data["success"])
+        alert("Cập nhật hồ sơ thành công!");
+        else 
+        alert("Cập nhật hồ sơ đéo thành công!");
+})
+.catch((error) => {
+    console.error(`Update profile information error: ${error}`);
+    alert("Cập nhật hồ sơ thất bại!");
+});
+console.log(formData);
 }
+
 
 function update_avatar() {
      let file = document.getElementById("fileInput").files[0];

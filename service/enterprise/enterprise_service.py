@@ -36,24 +36,21 @@ class enterprise_service:
             connection = pyodbc.connect(CONNECTION_STRING)
             cursor = connection.cursor()
             cursor.execute('''
-                SELECT id,avatar,A.name,introduction,homepage, email
+                SELECT id,avatar,A.name,introduction,homepage, email, role
                 from enterprise as A
-
                 join
                 enterprise_admin as B
                 on A.id = B.enterprise_id
                 WHERE id = ?''',(id))
             record = cursor.fetchone()
-            print(record)
             cursor.close()
             connection.close()
-
+            print("Record", record)
             if record:
                 return enterprise(
-                    app_json={"id": record[0], "avatar": record[1], "name": record[2], "introduction": record[3],
-                              "homepage": record[4], "email": record[5]})
+                    app_json={"enterprise_id": record[0], "avatar": record[1], "name": record[2], "introduction": record[3],
+                              "homepage": record[4], "email": record[5], "role":record[6]})
             return None
-
         except:
             raise
 
@@ -78,44 +75,65 @@ class enterprise_service:
 
     def update_profile(self, app_json):
         try:
-            (name, phone, address, facebook, github,
-             self_introduction, education_school_name, education_major,
-             education_school_start_date, education_school_end_date,
-             internship_enterprise_name, internship_position,
-             internship_start_date, internship_end_date, id) = (
-                app_json["name"], app_json["birthdate"], app_json["gender"], app_json["phone"],
-                app_json["address"], app_json["facebook"], app_json["github"], app_json["self_introduction"],
-                app_json["education_school_name"], app_json["education_major"],
-                app_json["education_school_start_date"], app_json["education_school_end_date"],
-                app_json["internship_enterprise_name"], app_json["internship_position"],
-                app_json["internship_start_date"], app_json["internship_end_date"], app_json["id"])
+            (name, introduction,homepage, enterprise_id) = (
+                app_json["name"],  app_json["introduction"], app_json["homepage"],app_json["enterprise_id"])
 
-            birthdate = None if not birthdate else birthdate
-            education_school_start_date = None if not education_school_start_date else education_school_start_date
-            education_school_end_date = None if not education_school_end_date else education_school_end_date
-            internship_start_date = None if not internship_start_date else internship_start_date
-            internship_end_date = None if not internship_end_date else internship_end_date
-
+            name = None if not name else name
+            introduction = None if not introduction else introduction
+            homepage = None if not homepage else homepage
+            enterprise_id = None if not enterprise_id else enterprise_id
             connection = pyodbc.connect(CONNECTION_STRING)
             cursor = connection.cursor()
             sql = """
                 UPDATE enterprise 
-                SET name=?,birthdate=?,gender=?,phone=?,address=?,facebook=?,github=?,
-                self_introduction=?,education_school_name=?,education_major=?,education_school_start_date=?,
-                education_school_end_date=?,internship_enterprise_name=?,internship_position=?,
-                internship_start_date=?,internship_end_date=? 
+                SET name=?,introduction=?,homepage=?
                 WHERE id=?
             """
-            placeholder = (name, phone, address, facebook, github, self_introduction, education_school_name,
-                           education_major, education_school_start_date, education_school_end_date, internship_enterprise_name,
-                           internship_position, internship_start_date, internship_end_date, id)
+            placeholder = (name, introduction, homepage,enterprise_id)
             cursor.execute(sql, placeholder)
+            print("sql", sql)
             cursor.commit()
             cursor.close()
             connection.close()
         except:
             raise
-
+    def add_recruitment(self, app_json):
+        try:
+            jobName = app_json["jobName"];
+            jobDescription = app_json["jobDescription"];
+            position = app_json["position"];
+            applicantRequirement = app_json["applicantRequirement"];
+            benefit = app_json["benefit"];
+            minSalary = app_json["minSalary"];
+            maxSalary = app_json["maxSalary"];
+            deadline = app_json["deadline"];
+            postDate = app_json["postDate"];
+            enterprise_id = app_json["enterprise_id"]
+            jobName = None if not jobName else jobName
+            jobDescription = None if not jobDescription else jobDescription
+            position = None if not position else position
+            applicantRequirement = None if not applicantRequirement else applicantRequirement
+            benefit = None if not benefit else benefit
+            minSalary = None if not minSalary else minSalary
+            maxSalary = None if not maxSalary else maxSalary
+            deadline = None if not deadline else deadline
+            postDate = None if not postDate else postDate
+            enterprise_id =  None if not enterprise_id else enterprise_id
+            connection = pyodbc.connect(CONNECTION_STRING)
+            cursor = connection.cursor()
+            sql = """
+                INSERT INTO recruiment(job_name, job_description, position, applicant_requirement, benefit, min_salary, max_salary, enterprise_id, deadline, postdate)
+                VALUES (?,?,?,?,?,?,?,?,?,?)
+            """
+            placeholder = (jobName, jobDescription, position, applicantRequirement, benefit, minSalary, maxSalary, enterprise_id, deadline, postDate)
+            
+            cursor.execute(sql, placeholder)
+            print("sql", sql)
+            cursor.commit()
+            cursor.close()
+            connection.close()
+        except : 
+            raise
     def update_avatar(self, id, avatar):
         try:
             connection = pyodbc.connect(CONNECTION_STRING)
@@ -124,6 +142,26 @@ class enterprise_service:
             cursor.commit()
             cursor.close()
             connection.close()
+        except:
+            raise
+        
+    def get_all_enterprises(self):
+        try:
+            connection = pyodbc.connect(CONNECTION_STRING)
+            cursor = connection.cursor()
+            cursor.execute('SELECT id, name FROM enterprise')  # Chọn các trường bạn muốn lấy từ bảng enterprise
+            records = cursor.fetchall()
+            cursor.close()
+            connection.close()
+
+            enterprises = []
+            for record in records:
+                enterprises.append({
+                    "id": record[0],
+                    "name": record[1],
+                    # Bổ sung các trường thông tin khác nếu cần thiết
+                })
+            return enterprises
         except:
             raise
 
@@ -174,3 +212,4 @@ class enterprise_service:
             connection.close()
         except:
             raise
+        

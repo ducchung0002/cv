@@ -11,6 +11,6 @@ class login(Resource):
         app_ser = enterprise_service()
         enterprise = app_ser.valid_login(email, password)
         if enterprise:
-            return jsonify(success=True, access_token=create_access_token(identity=enterprise.identity()), msg="Login success!")
+            return jsonify(success=True, access_token=create_access_token(identity=enterprise.identity()), msg="Login success!", role = enterprise.role)
         else:
             return jsonify(success=False, msg="Account does not exist!")
